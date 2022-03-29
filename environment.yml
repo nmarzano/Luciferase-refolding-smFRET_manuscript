@@ -1,0 +1,13 @@
+name: sm_analysis
+channels:
+  - defaults
+dependencies:
+  - numpy
+  - seaborn
+  - scipy
+  - pandas
+  - ipykernel
+  - jupyter
+  - lmfit
+  - loguru
+
