@@ -1,13 +1,14 @@
 name: sm_analysis
 channels:
+  - conda-forge
   - defaults
 dependencies:
-  - numpy
-  - seaborn
-  - scipy
-  - pandas
-  - ipykernel
-  - jupyter
-  - lmfit
-  - loguru
+  - numpy=1.19.2
+  - seaborn=0.11.1
+  - scipy=1.6.1
+  - pandas=1.2.3
+  - ipykernel=5.3.4
+  - jupyter=1.0.0
+  - lmfit=1.0.3
+  - loguru=0.5.3
 
