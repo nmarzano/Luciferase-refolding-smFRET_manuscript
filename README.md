@@ -1,3 +1,6 @@
+[![DOI](https://zenodo.org/badge/475285599.svg)](https://zenodo.org/badge/latestdoi/475285599)
+
+
 # Manuscript v1.01: Code used to analyze data published in 'Real-time single-molecule observation of chaperone-assisted protein folding'
 
 This code was written to analyse single-molecule FRET (smFRET) data generated as part of the manuscript entitled ‘Real-time single-molecule observation of chaperone-assisted protein folding'. Generally, the code imports the raw FRET data, removes outliers and analyses the kinetic details originating from Hidden Markov Model (HMM) fitting of the data using the vbFRET MATLAB program. Furthermore, analysed data can be plotted in a variety of different formats (e.g., FRET histograms, transition density plots [TDPs], FRET-intensity traces, violin plots etc.) for easy data visualization.
