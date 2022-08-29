@@ -5,20 +5,12 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-input_folder = 'Experiment_X-description/python_results'
+input_folder = 'Experiment_1-description/python_results'
 output_folder = f'{input_folder}/TDP_plots'
 
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
-#### the first item in the tuple will be the name that goes into the graph legend ######## CAN COPY FROM 2A-INITIAL_CLEANUP_tdp
-data_paths = {
-    "treatment_label_1":"data_directory_1",
-    "treatment_label_2":"data_directory_1",
-    "treatment_label_3":"data_directory_1",
-    "treatment_label_4":"data_directory_1",
-    "treatment_label_5":'data_directory_1'
-}
 
 ############### import cleaned data
 filename = f'{input_folder}/TDP_cleaned.csv'
@@ -37,8 +29,6 @@ def plot(treatment):
     sns.set(style = 'whitegrid', font_scale = 1.5)
     return plot1
 
-
-for data_name, data_path in data_paths.items():
-    treatment = TDP[TDP["treatment_name"] == data_name]
-    plot(treatment).savefig(f"{output_folder}/TDP_plot_{data_name}.svg", dpi = 600)
-
+for treatment, df in TDP.groupby('treatment_name'):
+    treatments = TDP[TDP["treatment_name"] == treatment]
+    plot(treatments).savefig(f"{output_folder}/TDP_plot_{treatment}.svg", dpi = 600)

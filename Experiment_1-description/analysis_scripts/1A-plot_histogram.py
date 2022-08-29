@@ -65,7 +65,8 @@ data_paths_ridgeline = {
     "12":"label",
 }
 
-pal = sns.color_palette(palette='mako', n_colors=12)
+n_colors = len(data_paths_ridgeline)
+pal = sns.color_palette(palette='mako', n_colors=n_colors)
 matplotlib.rc('font', **font)
 plt.rcParams['svg.fonttype'] = 'none'
 g = sns.FacetGrid(compiled_df, row='treatment_name', hue='treatment_name', aspect=10, height=5, palette=pal)
@@ -110,25 +111,42 @@ colors = {
     "treatment_5":"darkviolet"
 }
 
-def plot_hist(df, order):
-    sns.set(style="darkgrid", font_scale = 1.5, rc={'figure.figsize':(8,5.5)})
-    plot_hist = sns.kdeplot(
-        data = df, 
-        palette = 'mako', 
-        x = "FRET",
-        hue="treatment_name",
-        hue_order = order,
-        common_norm=False, 
-        fill = True, 
-        linewidth = 1.5, 
-        alpha = 0.25)
+def plot_hist_type(df, order, kind = 'kde'):
+    plot_hist, ax = plt.subplots()
+    sns.set_style("whitegrid",{'figure.figsize':(8,5.5), 'grid.linestyle':'--', 'font_scale':1.5} )
+    if kind == 'kde':
+        sns.kdeplot(
+            data = df, 
+            palette = 'mako', 
+            x = "FRET",
+            hue="treatment_name",
+            hue_order = order,
+            common_norm=False, 
+            fill = True, 
+            linewidth = 1.5, 
+            alpha = 0.25)
+    if kind == 'bar':
+        sns.histplot(
+            data = df, 
+            palette = 'mako', 
+            x = "FRET",
+            hue="treatment_name",
+            hue_order = order,
+            common_norm=False, 
+            stat = 'density',
+            binwidth = 0.025,
+            fill = True, 
+            kde = True,
+            linewidth = 1.5, 
+            alpha = 0.25)
     plt.xlim(0, 1, 10)
     plt.xlabel("FRET")
-    plt.legend([labels[treatment] for treatment in reversed(order)],loc='upper left', fontsize = 15)
-    plot_hist.figure.savefig(f'{output_folder}/Histogram.svg', dpi = 600)
+    plt.legend([labels[treatment] for treatment in reversed(order)],loc='upper left', fontsize = 12)
+    [x.set_linewidth(2) for x in ax.spines.values()]
+    [x.set_color('black') for x in ax.spines.values()]
+    plot_hist.savefig(f'{output_folder}/Histogram_{kind}.svg', dpi = 600)
     plt.show()
 
-plot_hist(compiled_df, order)
 
-
+plot_hist_type(compiled_df, order, 'kde')
 

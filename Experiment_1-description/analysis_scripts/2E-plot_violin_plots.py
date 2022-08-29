@@ -245,6 +245,7 @@ def plot_parameters_scattbar(df, x_col, x_order, y_col, hue_col, hue_order, show
     return ax
 
 
+
 ### to plot with SEM
 x_order = final['transition_type'].unique().tolist()
 sample_sum = len(order)
@@ -255,10 +256,13 @@ plt.rcParams['font.family'] = "sans-serif"
 plt.rc('font', **font)
 plt.rcParams['svg.fonttype'] = 'none'
 
-fig, ax = plt.subplots(figsize = (15, 5))
+fig, ax = plt.subplots()
+sns.set_style('whitegrid', {'font_scale':1.5, 'grid.linestyle':'--'})
 plot_parameters_scattbar(final, 'transition_type', x_order, 'y_axis', 'treatment', order, show_bars = True, err_type = 'sem', colors = palette, ax = ax)
 plt.ylim(0, 50)
 plt.ylabel('Transition class')
+plt.xticks(rotation = 45)
+[x.set_linewidth(2) for x in ax.spines.values()]
+[x.set_color('black') for x in ax.spines.values()]
 fig.savefig(f'{output_folder}/mean_residence_withSEM.svg', dpi = 600)
 plt.show()
-

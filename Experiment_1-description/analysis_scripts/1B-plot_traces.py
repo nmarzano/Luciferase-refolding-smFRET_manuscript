@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Aug 19 10:40:54 2020
-
-@author: paudel
-"""
-
-
 from scipy.stats import norm
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -51,12 +43,14 @@ compiled_df = pd.concat(compiled_df)   #### .rename(columns = {1:"test", 3:"test
 ############ Code to plot FRET and/or intensity traces
 def plot_intensity(treatment):
     plt.rcParams['svg.fonttype'] = 'none'
-    sns.set(style = "darkgrid")
-    plot1 = plt.figure(figsize = (5, 2))
+    sns.set_style("whitegrid", {'grid.linestyle':'--'})
+    plot1, ax = plt.subplots(figsize = (5, 2))
     plt.xlim(0, 150, 10)
     plt.ylim(0, 4000, 0.2)
     sns.lineplot(x = treatment["Time"], y = treatment["donor"], color = 'green')
     sns.lineplot(x = treatment["Time"], y = treatment["acceptor"], color = 'purple')
+    [x.set_linewidth(2) for x in ax.spines.values()]
+    [x.set_color('black') for x in ax.spines.values()]
     plt.xlabel("Time (s)")
     plt.ylabel("FRET")
     plt.show()
@@ -64,17 +58,18 @@ def plot_intensity(treatment):
 
 def plot_FRET(treatment):
     plt.rcParams['svg.fonttype'] = 'none'
-    sns.set(style = "darkgrid")
-    plot2 = plt.figure(figsize = (5, 2))
+    sns.set_style("whitegrid", {'grid.linestyle':'--'})
+    plot2, ax = plt.subplots(figsize = (5, 2))
     plt.xlim(0, 200, 10)
     plt.ylim(0, 1.1, 0.2)
     sns.lineplot(x = treatment["Time"], y = treatment["smoothed_FRET"], color = 'black')
     sns.lineplot(x = treatment["Time"], y = treatment["idealized FRET"], color = 'darkorange')
+    [x.set_linewidth(2) for x in ax.spines.values()]
+    [x.set_color('black') for x in ax.spines.values()]
     plt.xlabel("Time (s)")
     plt.ylabel("FRET")
     plt.show()
     return plot2
-
 
 for data_name, data_path in data_paths.items():
     treatment = compiled_df[compiled_df["treatment_name"] == data_name]
