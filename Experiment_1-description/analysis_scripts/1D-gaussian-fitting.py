@@ -1,3 +1,4 @@
+from argon2 import Parameters
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -17,6 +18,10 @@ import matplotlib.pyplot as plt
 from scipy import optimize
 import scipy.integrate as integrate
 from lmfit import models
+from lmfit import Model, Parameter, report_fit
+import math 
+from matplotlib import pyplot as mp
+import numpy as np
 
 input_folder = 'Experiment_1-description/python_results'
 output_folder = f"{input_folder}/GaussianFits"  ### modify for each experiment
@@ -205,4 +210,94 @@ gaussian_low_constrainall = fit_gauss_dif_constrained_allpeaks(compiled_df, 'low
 
 collated_allconstrained = pd.concat([gaussian_kj_skew_con_nat,gaussian_low_constrainall, gaussian_medium_constrainall, gaussian_col_high ])
 collated_allconstrained.to_csv(f'{output_folder}/histogram_proportions_constrained.csv', index = False)
+
+##########
+########## Theoretical demonstration of skew
+##########
+
+def gaussian(x, mu, sig):
+    return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
+
+x_values = np.linspace(0, 1, 100)
+for mu, sig in [(.8, .1)]:
+    mp.plot(x_values, gaussian(x_values, mu, sig))
+
+mp.show()
+
+
+pair_distance =  np.linspace(0, 1, 100)
+forster_radius = 0.51
+FRET = 1/(1 + np.power((pair_distance/forster_radius), 6.))
+
+sns.scatterplot(x = pair_distance, y = FRET)
+plt.show()
+
+Forster_values = np.linspace(0.5, 1, 6)
+
+for mu, sig in [(.404, .05)]:
+    mp.plot(FRET, gaussian(pair_distance, mu, sig))
+    plt.xlabel('FRET')
+
+FRET_peaks = np.linspace(0, 1, 9)
+FRET_peaks_df = pd.DataFrame(FRET_peaks)
+FRET_peaks_df.columns = ['FRET_peak']
+
+
+
+for value in FRET_peaks:
+    FRET_2 = 1/(1 + np.power((pair_distance/forster_radius), 6.))
+    for mu, sig in [(value, .1)]:
+        mp.plot(FRET_2, gaussian(pair_distance, mu, sig))
+        plt.xlabel('FRET')
+plt.show()
+
+
+plot1 = plt.figure()
+plt.rcParams['svg.fonttype'] = 'none'
+
+for mu, sig in [(.8, .05)]:
+    mp.plot(x_values, gaussian(x_values, mu, sig))
+
+for mu, sig in [(.404, .05)]:
+    mp.plot(FRET, gaussian(pair_distance, mu, sig))
+
+
+sns.scatterplot(x = FRET, y = pair_distance)
+# plot1.legend(['Pair-distance', 'FRET transformed pair-distance', 'Pair-distance/FRET relationship'])
+plot1.savefig(f'{output_folder}/comparison-with-fret-on-xaxis.svg', dpi = 600)
+plt.show
+
+
+pair_distance =  np.linspace(0, 1, 100)
+forster_radius = 0.51
+FRET_peaks = np.linspace(0, 1, 9)
+FRET_peaks_df = pd.DataFrame(FRET_peaks)
+FRET_peaks_df.columns = ['FRET_peak']
+
+def plot_skew(df, sigma, pair_distance = pair_distance, forster_radius = 0.51):
+    y_data = []
+    for value, dfs in df.groupby('FRET_peak'):
+        FRET_2 = 1/(1 + np.power((pair_distance/forster_radius), 6.))
+        for mu, sig in [(value, sigma)]:
+            y = gaussian(pair_distance, mu, sig)
+        y_df = pd.DataFrame(y)
+        y_df['mu'] = mu
+        y_df['xdata'] = FRET_2
+        y_data.append(y_df)
+        concat_data = pd.concat(y_data)
+        concat_data.columns = ['ydata', 'mu', 'xdata']
+    return concat_data
+
+
+skew_plot = plot_skew(FRET_peaks_df, 0.05)
+
+plt.figure()
+plt.rcParams['svg.fonttype'] = 'none'
+sns.set_style('darkgrid') ## alternatively, 'ticks'
+sns.lineplot(data = skew_plot, y = 'ydata', x = 'xdata', hue = 'mu', palette = 'mako', legend = 'full')
+plt.legend(loc = "upper left", bbox_to_anchor = (1,1), ncol =1)
+plt.ylabel('Probability')
+plt.xlabel('FRET')
+plt.savefig(f'{output_folder}/Different-mu.svg', dpi = 600)
+plt.show()
 
